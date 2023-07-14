@@ -68,22 +68,39 @@ def score(font, color, size, Score, boarders):
 
 
 # game over function
-def endGame(font, color, size, Score, boarders):
+def endGame(font, color, size, Score, boarders, HS):
     # creating font object Font
     Font = pg.font.SysFont(font, size)
 
     # creating a text surface on which text
     # will be drawn
-    displayedText = Font.render("Your Score is : " + str(Score), True, color)
+    if Score > int(HS):
+        HS = Score
+        HS_F = open("highestScore.txt", "w")
+        HS_F.write(str(Score))
+        HS_F.close()
+        newHS = "New High Score!"
+    else:
+        newHS = ""
+        
+    displayedNewHS = Font.render(newHS, True, color)
+    displayedHS = Font.render("Highest Score is: {}".format(str(HS)), True, color)
+    displayedText = Font.render("Your Score is : {}" .format(str(Score)), True, color)
 
     # create a rectangular object for the text
     # surface object
+    newHSTextBox = displayedNewHS.get_rect()
+    HSTextBox = displayedHS.get_rect()
     textBox = displayedText.get_rect()
 
     # setting position of the text
+    newHSTextBox.midtop = (SW / 2, SH / 8)
+    HSTextBox.midtop = (SW / 2, SH / 6)
     textBox.midtop = (SW / 2, SH / 4)
 
     # blit will draw the text on screen
+    screen.blit(displayedNewHS, newHSTextBox)
+    screen.blit(displayedHS, HSTextBox)
     screen.blit(displayedText, textBox)
     pg.display.flip()
 
@@ -128,18 +145,21 @@ def getScore():
 
 # Main Function
 def game(chngDrct, drct, snakePos, body, fruitPos, fruitSpawn, Score, boarders):
+    
+    
+    HS_F = open("highestScore.txt", "r")
+    HS = HS_F.read()
+    HS_F.close()
+
     snakePos = [100, 50]
 
     # defining first 4 blocks of snake body
     body = [[100, 50], [90, 50], [80, 50], [70, 50]]
-    
-    Boarders = [[0, 0], [0, 500], [500, 0], [500, 500]]
 
     Score = 0
 
     # handling key events
     while True:
-        
         
         for event in pg.event.get():
             if event.type == pg.KEYDOWN:
@@ -194,10 +214,15 @@ def game(chngDrct, drct, snakePos, body, fruitPos, fruitSpawn, Score, boarders):
         else:
             body.pop()
 
-        if not fruitSpawn:
+        if not fruitSpawn and not boarders:
             fruitPos = [
                 rand.randrange(1, (SW // 10)) * 10,
                 rand.randrange(1, (SH // 10)) * 10,
+            ]
+        elif not fruitSpawn and boarders:
+            fruitPos = [
+                rand.randrange(2, (SW // 10) - 1) * 10,
+                rand.randrange(2, (SH // 10) - 1) * 10,
             ]
 
         fruitSpawn = True
@@ -216,31 +241,31 @@ def game(chngDrct, drct, snakePos, body, fruitPos, fruitSpawn, Score, boarders):
         pg.draw.rect(screen, white, pg.Rect(fruitPos[0], fruitPos[1], 10, 10))
 
         # Game Over conditions
-        if snakePos[0] < 20:
+        if snakePos[0] < 10:
             if boarders:
-                endGame("Chalkboard", red, 20, Score, boarders)
+                endGame("Chalkboard", red, 20, Score, boarders, HS)
             elif snakePos[0] < 0:
                 snakePos[0] = SW - 10
-        elif snakePos[0] > SW - 30:
+        elif snakePos[0] > SW - 20:
             if boarders:
-                endGame("Chalkboard", red, 20, Score, boarders)
+                endGame("Chalkboard", red, 20, Score, boarders, HS)
             elif snakePos[0] > SW - 10:
                 snakePos[0] = 0
-        elif snakePos[1] < 20:
+        elif snakePos[1] < 10:
             if boarders:
-                endGame("Chalkboard", red, 20, Score, boarders)
+                endGame("Chalkboard", red, 20, Score, boarders, HS)
             elif snakePos[1] < 0:
                 snakePos[1] = SH - 10
-        elif snakePos[1] > SH - 30:
+        elif snakePos[1] > SH - 20:
             if boarders:
-                endGame("Chalkboard", red, 20, Score, boarders)
+                endGame("Chalkboard", red, 20, Score, boarders, HS)
             elif snakePos[1] > SH - 10:
                 snakePos[1] = 0
 
         # Touching the snake body
         for block in body[1:]:
             if snakePos[0] == block[0] and snakePos[1] == block[1]:
-                endGame("Chalkboard", red, 20, Score, boarders)
+                endGame("Chalkboard", red, 20, Score, boarders, HS)
         # displaying score continuously
         score("Chalkboard", white, 20, Score, boarders)
 

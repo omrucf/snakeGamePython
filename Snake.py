@@ -23,7 +23,7 @@ pg.init()
 
 # Initialise game window
 pg.display.set_caption("Snake")
-pg.display.set_icon(pg.image.load("Snake/icons/mainIcon.png"))
+pg.display.set_icon(pg.image.load("icons/mainIcon.png"))
 screen = pg.display.set_mode((SH, SW))
 
 # FPS (frames per second) controller

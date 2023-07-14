@@ -6,7 +6,7 @@ pg.init()
 
 screen = pg.display.set_mode((500, 500))
 pg.display.set_caption("Snake")
-pg.display.set_icon(pg.image.load("Snake/icons/mainIcon.png"))
+pg.display.set_icon(pg.image.load("icons/mainIcon.png"))
 
 black = (0, 0, 0)
 white = (255, 255, 255)
